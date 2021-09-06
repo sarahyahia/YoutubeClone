@@ -4,6 +4,7 @@ import "./_video.scss"
 import moment from 'moment'
 import request from './../../api';
 import numeral from 'numeral';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
 
 const Video = ({video}) => {
 
@@ -24,6 +25,7 @@ const Video = ({video}) => {
     const seconds = moment.duration(duration).asSeconds()
     const _duration = moment.utc(seconds*1000).format('mm:ss')
 
+    const _videoId = id?.videoId || id;
 
     useEffect(()=>{
       const get_video_details = async() => {
@@ -32,14 +34,14 @@ const Video = ({video}) => {
         } = await request('/videos',{
           params: {
             part: 'contentDetails,statistics',
-            id: id
+            id: _videoId
           },
         })
         setDuration(items[0].contentDetails.duration)
         setViews(items[0].statistics.viewCount)
       }
       get_video_details()
-    },[id])
+    },[_videoId])
 
     useEffect(()=>{
       const get_channel_icon = async() => {
@@ -60,8 +62,9 @@ const Video = ({video}) => {
     
     <div className="video">
       <div className="video__top">
-        <img alt='' src={medium.url}/>
-        <span>{_duration}</span>
+        {/* <img alt='' src={medium.url}/> */}
+        <LazyLoadImage src={medium.url} effect='blur'/>
+        <span className="video__top__duration">{_duration}</span>
       </div>
       <div className="video__title">
         {title}
@@ -73,7 +76,8 @@ const Video = ({video}) => {
         <span> {moment(publishedAt).fromNow()}</span>
       </div>
       <div className="video__channel">
-        <img src={channelIcon?.url} alt=""/>
+        {/* <img src={channelIcon?.url} alt=""/> */}
+        <LazyLoadImage src={channelIcon?.url} effect='blur'/>
         <p>{channelTitle}</p>
       </div>
     </div>

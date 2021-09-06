@@ -12,6 +12,10 @@
     height: 10vh;
     width: 100%;
 
+    z-index: 3;
+    position: fixed;
+    top: 0;
+
     &__menu {
         display: none;
     }
