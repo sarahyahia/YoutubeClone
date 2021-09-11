@@ -13,6 +13,7 @@ import {
   useHistory,
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import WatchScreen from './screens/watchScreen/WatchScreen';
 
 
 const Layout = ({children}) => {
@@ -52,7 +53,6 @@ function App() {
   },[accessToken, loading, history])
 
   return (
- 
       <Switch>
         <Route exact path="/">
           <Layout>
@@ -65,9 +65,13 @@ function App() {
         <Route path="/search">
           <h1>Search</h1>
         </Route>
+        <Route path="/watch/:id">
+          <Layout>
+            <WatchScreen/>
+          </Layout>
+        </Route>
         <Redirect to="/"/>
       </Switch>
-
   );
 }
 
