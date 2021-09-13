@@ -1,34 +1,45 @@
-import React from 'react'
+import React, {useEffect} from 'react'
 import './_videoMetaData.scss'
 import { AiFillEye } from 'react-icons/ai'
 import moment from 'moment'
 import numeral from 'numeral'
 import {MdThumbUp, MdThumbDown} from 'react-icons/md'
 import ShowMoreText from "react-show-more-text";
+import { useDispatch, useSelector } from 'react-redux';
+import { checkSubscriptionStatus, getChannelDetails } from './../../redux/actions/cannel.action';
 
 
-const VideoMetaData = () => {
+const VideoMetaData = ({video:{snippet,statistics},videoId}) => {
 
-    const handleSubscribe =(e)=>{
-        // console.log(e)
-    }
+    const {channelId, channelTitle, description, title, publishedAt} = snippet;
+    const {viewCount, likeCount, dislikeCount}= statistics;
+
+    const dispatch = useDispatch();
+
+    const subscriptionStatus = useSelector(state=> state.channelDetails.subscriptionStatus)
+    const {snippet:channelSnippet, statistics:channelStatistics}= useSelector(state=> state.channelDetails.channel)
+    
+    useEffect(()=>{
+        dispatch(getChannelDetails(channelId));
+        dispatch(checkSubscriptionStatus(channelId));
+    },[dispatch,channelId])
 
     return (
         <>
         <div className="videoMetaData py-2">
             <div className="videoMetaData__top">
-                <h5>Video title</h5>
+                <h5>{title}</h5>
                 <div className="d-flex justify-content-between align-items-center py-1">
                     <span>
-                        <AiFillEye/> {numeral(1000).format("0.a")} Views • {moment('2020-06-06').fromNow()}
+                        <AiFillEye/> {numeral(viewCount).format("0.a")} Views • {moment(publishedAt).fromNow()}
                     </span>
                     
                     <div>
                         <span className="mx-3">
-                            <MdThumbUp size={26}/>{numeral(1000).format("0.a")}
+                            <MdThumbUp size={26}/> {numeral(likeCount).format("0.a")}
                         </span>
                         <span className="mr-3">
-                            <MdThumbDown size={26}/>{numeral(1000).format("0.a")}
+                            <MdThumbDown size={26}/> {numeral(dislikeCount).format("0.a")}
                         </span>
                     </div>
                 </div>
@@ -36,16 +47,18 @@ const VideoMetaData = () => {
             <div className="videoMetaData__channel d-flex justify-content-between align-items-center my-2 py-3">
                 <div className="d-flex">
                     <img 
-                        src="https://www.pngkey.com/png/full/114-1149878_setting-user-avatar-in-specific-size-without-breaking.png"
+                        src={channelSnippet?.thumbnails?.default?.url}
                         alt=""
                         className='rounded-circle mx-3'
                     />
                     <div className="d-flex flex-column">
-                        <span>SOYF</span>
-                        <span> {numeral(1000).format("0.a")} Subscriber</span>
+                        <span>{channelTitle}</span>
+                        <span> {numeral(channelStatistics?.subscriberCount).format("0.a")} Subscriber</span>
                     </div>
                 </div>
-                <button className="btn border-0 p-2 m-2" onClick={handleSubscribe}>Subscribe</button>
+                <button className={`btn border-0 p-2 m-2 ${subscriptionStatus&& 'btn-gray'}`}>
+                    {subscriptionStatus?'SUBSCRIBED':'SUBSCRIBE'}
+                </button>
             </div>
             <div className="videoMetaData__description">
                 <ShowMoreText
@@ -56,9 +69,7 @@ const VideoMetaData = () => {
                     anchorClass="showMoreClass"
                     expanded={false}
                 >
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam odio, culpa impedit nesciunt non ducimus reprehenderit maxime! Doloribus dolorem vitae deleniti impedit vero? Earum eius nobis nesciunt excepturi odit architecto qui quasi vero impedit, possimus ratione culpa, esse fugiat, quibusdam atque doloribus laborum porro recusandae voluptatum corrupti. Beatae, fuga nemo.
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam odio, culpa impedit nesciunt non ducimus reprehenderit maxime! Doloribus dolorem vitae deleniti impedit vero? Earum eius nobis nesciunt excepturi odit architecto qui quasi vero impedit, possimus ratione culpa, esse fugiat, quibusdam atque doloribus laborum porro recusandae voluptatum corrupti. Beatae, fuga nemo.
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Quam odio, culpa impedit nesciunt non ducimus reprehenderit maxime! Doloribus dolorem vitae deleniti impedit vero? Earum eius nobis nesciunt excepturi odit architecto qui quasi vero impedit, possimus ratione culpa, esse fugiat, quibusdam atque doloribus laborum porro recusandae voluptatum corrupti. Beatae, fuga nemo.
+                    {description}
                 </ShowMoreText>
             </div>
         </div>

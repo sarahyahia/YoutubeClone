@@ -1,6 +1,5 @@
 import React from 'react'
 import "./_sidebar.scss"
-import Header from './../header/Header';
 import { useDispatch } from 'react-redux';
 import {
     MdSubscriptions,
