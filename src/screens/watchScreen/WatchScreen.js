@@ -33,12 +33,15 @@ const WatchScreen = () => {
                     ></iframe>
                 </div>
                 {!loading ?(
-                <VideoMetaData video={video} videoId={id }/>
+                <VideoMetaData video={video} videoId={id}/>
                 ):(
                 <h6>loading...</h6>
                 )}
 
-                <Comments/>
+                <Comments 
+                    videoId={id} 
+                    totalComments={video?.statistics?.commentCount}
+                />
             </Col>
             <Col lg={4}>
                 {[...Array(10)].map(()=><VideoHorizontal/>)}
