@@ -14,6 +14,7 @@ import {
 } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import WatchScreen from './screens/watchScreen/WatchScreen';
+import SearchScreen from './screens/SearchScreen';
 
 
 const Layout = ({children}) => {
@@ -62,8 +63,10 @@ function App() {
         <Route path="/auth">
           <LoginScreen/>
         </Route>
-        <Route path="/search">
-          <h1>Search</h1>
+        <Route path="/search/:query">
+          <Layout>
+            <SearchScreen/>
+          </Layout>
         </Route>
         <Route path="/watch/:id">
           <Layout>
