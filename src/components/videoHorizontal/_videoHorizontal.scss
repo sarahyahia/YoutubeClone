@@ -36,6 +36,10 @@
         font-size: 0.9rem;
     }
 
+    &__desc{
+        @include line-clamp(2);
+    }
+
     &__title{
         font-size: 1rem;
         color: #fff;

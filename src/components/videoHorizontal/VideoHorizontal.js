@@ -9,7 +9,7 @@ import { Row, Col } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 
 
-const VideoHorizontal = ({video,searchScreen}) => {
+const VideoHorizontal = ({video, searchScreen, subscriptionsScreen}) => {
 
     const {
         id,
@@ -20,10 +20,11 @@ const VideoHorizontal = ({video,searchScreen}) => {
             title,
             publishedAt,
             thumbnails:{medium},
-        }
+            resourceId,
+        },
     } = video
 
-    const isVideo = id.kind === 'youtube#video'
+    const isVideo = !(id.kind === 'youtube#channel' || subscriptionsScreen)
     const [views, setViews] = useState(null)
     const [duration, setDuration] = useState(null)
     const [channelIcon, setChannelIcon] = useState(null)
@@ -46,8 +47,9 @@ const VideoHorizontal = ({video,searchScreen}) => {
         setDuration(items[0].contentDetails.duration)
         setViews(items[0].statistics.viewCount)
         }
-        get_video_details()
-    },[id])
+        if (isVideo)
+            get_video_details()
+    },[id,isVideo])
 
     useEffect(()=>{
         const get_channel_icon = async() => {
@@ -64,17 +66,18 @@ const VideoHorizontal = ({video,searchScreen}) => {
         get_channel_icon()
     },[channelId])
 
+    const _channelId = resourceId?.channelId || channelId
     const handleClick =()=>{
         isVideo
         ? history.push(`/watch/${id.videoId}`)
-        : history.push(`/channel/${id.channelId}`)
+        : history.push(`/channel/${_channelId}`)
     }
 
     const thumbnail = !isVideo && 'videoHorizontal__thumbnail-channel'
 
     return (<>
         <Row onClick={handleClick} className="videoHorizontal m-1 py-2 align-item-center">
-            <Col xs={6} md={searchScreen?4:6} className='videoHorizontal__left'>
+            <Col xs={6} md={searchScreen || subscriptionsScreen?4:6} className='videoHorizontal__left'>
             <LazyLoadImage 
                 src={medium.url}
                 effect='blur'
@@ -85,7 +88,7 @@ const VideoHorizontal = ({video,searchScreen}) => {
                 <span className="videoHorizontal__duration">{_duration}</span>
             }
             </Col>
-            <Col xs={6} md={searchScreen?8:6} className='videoHorizontal__right p-0'>
+            <Col xs={6} md={searchScreen || subscriptionsScreen?8:6} className='videoHorizontal__right p-0'>
                 <p className="videoHorizontal__title mb-1">
                     {title}
                 </p>
@@ -95,7 +98,14 @@ const VideoHorizontal = ({video,searchScreen}) => {
                         {moment(publishedAt).fromNow()}
                     </div>
                 }           
-                {isVideo && <p className="mt-1">
+                    {
+                        subscriptionsScreen && (
+                        <p className='mt-0'>
+                            {video.contentDetails.totalItemCount}{' '}vidoes
+                        </p>
+                        )
+                    }
+                {(searchScreen || subscriptionsScreen) && <p className="mt-1 videoHorizontal__desc">
                     {description}
                 </p>}
                 <div className="videoHorizontal__channel d-flex align-item-center my-1">
